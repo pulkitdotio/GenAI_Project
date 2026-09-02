@@ -12,7 +12,7 @@ authRouter.post('/login', authController.loginUser);
 authRouter.get('/logout', authController.logoutUser);
 
 
-authRouter.get('/get-me', authMiddleware.authUser, authController.getMeController);
+authRouter.get('/get-me', authMiddleware, authController.getMeController);
 
 
 module.exports = authRouter;
