@@ -18,7 +18,7 @@ interviewRouter.get("/report/:interviewId", authMiddleware, interviewController.
 interviewRouter.get("/", authMiddleware, interviewController.getAllInterviewReports);
 
 
-
+interviewRouter.post("/resume/pdf/:interviewReportId", authMiddleware, interviewController.generateResumePDFController)
 
 
 module.exports = interviewRouter;
