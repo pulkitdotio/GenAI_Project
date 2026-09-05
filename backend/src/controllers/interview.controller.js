@@ -33,14 +33,28 @@ async function generateInterviewReport(req, res)  {
 
 
 
+async function getInterviewReportById(req, res) {
+    const { interviewId } = req.params;
+
+    const interviewReport = await InterviewReportModel.findOne({ _id: interviewId, userId: req.user._id });
+
+    if (!interviewReport) {
+        return res.status(404).json({ message: 'Interview report not found' });
+    }
+
+    res.status(200).json({ interviewReport });
+}
+
+
+
+async function getAllInterviewReports(req, res) {
+    const interviewReports = await InterviewReportModel.findOne({ userId: req.user._id }).sort({ createdAt: -1 }).select("-resume -selfDescription -jobDescription -__v -technicalQuestions -behavioralQuestions -skillGaps -preparationPlan");
+    res.status(200).json({ interviewReports });
+}
 
 
 
 
 
 
-
-
-
-
-module.exports = { generateInterviewReport };
+module.exports = { generateInterviewReport, getInterviewReportById, getAllInterviewReports };
