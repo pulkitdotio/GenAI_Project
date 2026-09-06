@@ -1,22 +1,33 @@
 const pdfParse = require('pdf-parse');
-const {generateInterviewReport, generateResumePDF} = require('../services/ai.service');
+const {generateInterviewReport: generateInterviewReportService, generateResumePDF} = require('../services/ai.service');
 const InterviewReportModel = require('../models/interviewReport.model');
+const { PDFParse } = require('pdf-parse');
 
 async function generateInterviewReport(req, res)  {
 
-    const resumeContent = (new pdfParse.PDFParse(Uint8Array.from(req.file.buffer))).getText()
+    if(!req.file){
+        return res.status(400).json({
+            message: "Resume PDF is required"
+        });
+    }
+
+    const parser = new PDFParse({
+        data: req.file.buffer
+    });
+
+    const resumeContent = await parser.getText();
 
     const { selfDescription, jobDescription } = req.body;
 
 
-    const  interviewReportByAI = await generateInterviewReport.generateInterviewReport({
+    const  interviewReportByAI = await generateInterviewReportService({
         resume: resumeContent.text,
         selfDescription,
         jobDescription
     })
 
     const interviewReport = await InterviewReportModel.create({
-        userId: req.user._id,
+        userId: req.user.id,
         resume: resumeContent.text,
         selfDescription,
         jobDescription,
@@ -36,7 +47,7 @@ async function generateInterviewReport(req, res)  {
 async function getInterviewReportById(req, res) {
     const { interviewId } = req.params;
 
-    const interviewReport = await InterviewReportModel.findOne({ _id: interviewId, userId: req.user._id });
+    const interviewReport = await InterviewReportModel.findOne({ _id: interviewId, userId: req.user.id });
 
     if (!interviewReport) {
         return res.status(404).json({ message: 'Interview report not found' });
@@ -48,7 +59,7 @@ async function getInterviewReportById(req, res) {
 
 
 async function getAllInterviewReports(req, res) {
-    const interviewReports = await InterviewReportModel.find({ userId: req.user._id }).sort({ createdAt: -1 }).select("-resume -selfDescription -jobDescription -__v -technicalQuestions -behavioralQuestions -skillGaps -preparationPlan");
+    const interviewReports = await InterviewReportModel.find({ userId: req.user.id }).sort({ createdAt: -1 }).select("-resume -selfDescription -jobDescription -__v -technicalQuestions -behavioralQuestions -skillGaps -preparationPlan");
     res.status(200).json({ interviewReports });
 }
 
@@ -56,9 +67,9 @@ async function getAllInterviewReports(req, res) {
 
 async function generateResumePDFController(req,res){
     const { interviewReportId } = req.params
-    const interviewReport = await InterviewReportModel.findById(interviewReportId)
+    const interviewReport = await InterviewReportModel.findOne({_id: interviewReportId, userId: req.user.id})
 
-    if (!interviewReportId){
+    if (!interviewReport){
         return res.status(404).json({
             message: "Interview report not found"
         })
