@@ -29,27 +29,47 @@ function DashboardLayout() {
     useState(false);
 
   const handleLogout = async () => {
-    await logout();
-
-    navigate('/login', {
-      replace: true,
-    });
+    try {
+      await logout();
+    } finally {
+      navigate('/login', {
+        replace: true,
+      });
+    }
   };
 
   const closeSidebar = () => {
     setSidebarOpen(false);
   };
 
+  const getNavClass = ({ isActive }) =>
+    [
+      'sidebar-link',
+      isActive
+        ? 'sidebar-link--active'
+        : '',
+    ]
+      .filter(Boolean)
+      .join(' ');
+
   return (
     <div className="app-shell">
+
+      {/* Mobile menu button */}
       <button
+        type="button"
         className="mobile-menu-button"
         onClick={() =>
           setSidebarOpen(
             (current) => !current
           )
         }
-        aria-label="Toggle navigation"
+        aria-label={
+          sidebarOpen
+            ? 'Close navigation'
+            : 'Open navigation'
+        }
+        aria-expanded={sidebarOpen}
       >
         {sidebarOpen ? (
           <X size={21} />
@@ -58,6 +78,7 @@ function DashboardLayout() {
         )}
       </button>
 
+      {/* Sidebar */}
       <aside
         className={[
           'sidebar',
@@ -68,11 +89,17 @@ function DashboardLayout() {
           .filter(Boolean)
           .join(' ')}
       >
+
+        {/* Logo */}
         <div className="sidebar__header">
           <Logo />
         </div>
 
-        <nav className="sidebar__nav">
+        {/* Navigation */}
+        <nav
+          className="sidebar__nav"
+          aria-label="Main navigation"
+        >
           <span className="sidebar__label">
             Workspace
           </span>
@@ -80,13 +107,7 @@ function DashboardLayout() {
           <NavLink
             to="/dashboard"
             onClick={closeSidebar}
-            className={({ isActive }) =>
-              `sidebar-link ${
-                isActive
-                  ? 'sidebar-link--active'
-                  : ''
-              }`
-            }
+            className={getNavClass}
           >
             <LayoutDashboard size={17} />
             <span>Dashboard</span>
@@ -95,13 +116,7 @@ function DashboardLayout() {
           <NavLink
             to="/interviews/new"
             onClick={closeSidebar}
-            className={({ isActive }) =>
-              `sidebar-link ${
-                isActive
-                  ? 'sidebar-link--active'
-                  : ''
-              }`
-            }
+            className={getNavClass}
           >
             <FileText size={17} />
             <span>New Interview</span>
@@ -110,13 +125,7 @@ function DashboardLayout() {
           <NavLink
             to="/interviews"
             onClick={closeSidebar}
-            className={({ isActive }) =>
-              `sidebar-link ${
-                isActive
-                  ? 'sidebar-link--active'
-                  : ''
-              }`
-            }
+            className={getNavClass}
           >
             <BarChart3 size={17} />
             <span>My Interviews</span>
@@ -126,6 +135,7 @@ function DashboardLayout() {
             Account
           </span>
 
+          {/* Phase 3 */}
           <button
             type="button"
             className="sidebar-link sidebar-link--disabled"
@@ -135,6 +145,7 @@ function DashboardLayout() {
             <span>Profile</span>
           </button>
 
+          {/* Phase 3 */}
           <button
             type="button"
             className="sidebar-link sidebar-link--disabled"
@@ -145,6 +156,7 @@ function DashboardLayout() {
           </button>
         </nav>
 
+        {/* Logout */}
         <div className="sidebar__footer">
           <button
             type="button"
@@ -157,12 +169,15 @@ function DashboardLayout() {
         </div>
       </aside>
 
-      <div className="app-main">
+      {/* Main application area */}
+      <main className="app-main">
         <Outlet />
-      </div>
+      </main>
 
+      {/* Mobile overlay */}
       {sidebarOpen && (
         <button
+          type="button"
           className="sidebar-overlay"
           onClick={closeSidebar}
           aria-label="Close navigation"

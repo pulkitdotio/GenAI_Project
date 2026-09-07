@@ -5,16 +5,26 @@ import {
   Trophy,
 } from 'lucide-react';
 
-function DashboardStats({ interviews }) {
+function DashboardStats({
+  interviews = [],
+}) {
   const total = interviews.length;
 
+  /*
+   * Every record returned by GET /interview/
+   * is an already-generated interview report.
+   */
   const completed = interviews.length;
 
   const scores = interviews
-    .map((item) => item.matchScore)
+    .map(
+      (interview) =>
+        interview?.matchScore
+    )
     .filter(
       (score) =>
-        typeof score === 'number'
+        typeof score === 'number' &&
+        !Number.isNaN(score)
     );
 
   const averageScore =
@@ -40,18 +50,21 @@ function DashboardStats({ interviews }) {
       icon: FileText,
       tone: 'purple',
     },
+
     {
       label: 'Completed',
       value: completed,
       icon: CheckCircle2,
       tone: 'green',
     },
+
     {
       label: 'Average Match Score',
       value: `${averageScore}%`,
       icon: Gauge,
       tone: 'blue',
     },
+
     {
       label: 'Best Match Score',
       value: `${bestScore}%`,
@@ -61,29 +74,40 @@ function DashboardStats({ interviews }) {
   ];
 
   return (
-    <div className="stats-grid">
+    <section
+      className="stats-grid"
+      aria-label="Interview statistics"
+    >
       {stats.map((stat) => {
         const Icon = stat.icon;
 
         return (
-          <div
+          <article
             className="stat-card"
             key={stat.label}
           >
             <div
-              className={`stat-card__icon stat-card__icon--${stat.tone}`}
+              className={[
+                'stat-card__icon',
+                `stat-card__icon--${stat.tone}`,
+              ].join(' ')}
             >
               <Icon size={19} />
             </div>
 
             <div className="stat-card__content">
-              <span>{stat.label}</span>
-              <strong>{stat.value}</strong>
+              <span>
+                {stat.label}
+              </span>
+
+              <strong>
+                {stat.value}
+              </strong>
             </div>
-          </div>
+          </article>
         );
       })}
-    </div>
+    </section>
   );
 }
 

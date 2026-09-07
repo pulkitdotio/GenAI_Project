@@ -1,4 +1,8 @@
-import { useEffect, useState } from 'react';
+import {
+  useEffect,
+  useState,
+} from 'react';
+
 import { Sparkles } from 'lucide-react';
 
 import WelcomeHeader from './components/WelcomeHeader';
@@ -18,28 +22,35 @@ function Dashboard() {
   const [loading, setLoading] =
     useState(true);
 
-  const [error, setError] = useState('');
+  const [error, setError] =
+    useState('');
 
   useEffect(() => {
     let mounted = true;
 
     async function loadDashboard() {
       try {
+        setError('');
+
         const response =
           await getInterviews();
 
-        if (mounted) {
-          setInterviews(
-            response.interviewReports || []
-          );
+        if (!mounted) {
+          return;
         }
+
+        setInterviews(
+          response?.interviewReports || []
+        );
       } catch (error) {
-        if (mounted) {
-          setError(
-            error?.response?.data?.message ||
-              'Unable to load dashboard data.'
-          );
+        if (!mounted) {
+          return;
         }
+
+        setError(
+          error?.response?.data?.message ||
+            'Unable to load dashboard data.'
+        );
       } finally {
         if (mounted) {
           setLoading(false);
@@ -60,21 +71,30 @@ function Dashboard() {
 
   return (
     <div className="dashboard-page">
+
+      {/* Top navigation */}
       <WelcomeHeader />
 
       <div className="dashboard-content">
+
+        {/* Introduction */}
         <section className="dashboard-intro">
+
           <div>
             <div className="dashboard-greeting">
-              <span>Good to see you</span>
-              <Sparkles size={16} />
+              <span>
+                Your AI interview assistant
+              </span>
+
+              <Sparkles size={15} />
             </div>
 
             <h1>
-              Stay prepared.
+              Prepare smarter.
               <br />
+
               <span>
-                Great opportunities are ahead.
+                Get hired faster.
               </span>
             </h1>
           </div>
@@ -84,21 +104,29 @@ function Dashboard() {
             <br />
             Confidence tomorrow.”
           </p>
+
         </section>
 
+        {/* API error */}
         {error && (
-          <ErrorMessage message={error} />
+          <ErrorMessage
+            message={error}
+          />
         )}
 
+        {/* Create interview */}
         <CreateInterviewBanner />
 
+        {/* Statistics */}
         <DashboardStats
           interviews={interviews}
         />
 
+        {/* Recent interviews */}
         <RecentInterviews
           interviews={interviews}
         />
+
       </div>
     </div>
   );
