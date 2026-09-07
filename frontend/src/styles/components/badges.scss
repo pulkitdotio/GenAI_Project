@@ -1,0 +1,34 @@
+@use '../variables' as *;
+
+.badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+
+  width: fit-content;
+
+  padding: 5px 8px;
+
+  border-radius: 99px;
+
+  font-size: 10px;
+  font-weight: 600;
+
+  white-space: nowrap;
+
+  &__dot {
+    width: 5px;
+    height: 5px;
+
+    border-radius: 50%;
+  }
+
+  &--success {
+    background: $success-bg;
+    color: $green;
+
+    .badge__dot {
+      background: $green;
+    }
+  }
+}

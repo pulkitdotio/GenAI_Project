@@ -1,0 +1,131 @@
+@use '../variables' as *;
+
+.stat-card {
+  display: flex;
+  align-items: center;
+  gap: 13px;
+
+  min-height: 96px;
+
+  padding: 17px;
+
+  border: 1px solid $border;
+  border-radius: $radius-md;
+
+  background:
+    linear-gradient(
+      145deg,
+      rgba(18, 28, 48, 0.96),
+      rgba(13, 21, 38, 0.92)
+    );
+
+  transition:
+    border-color $transition,
+    transform $transition;
+
+  &:hover {
+    transform: translateY(-2px);
+
+    border-color:
+      rgba(139, 92, 246, 0.25);
+  }
+
+  &__icon {
+    display: grid;
+    place-items: center;
+
+    width: 42px;
+    height: 42px;
+
+    flex: 0 0 42px;
+
+    border-radius: 11px;
+
+    &--purple {
+      color: #c084fc;
+      background:
+        rgba(168, 85, 247, 0.12);
+    }
+
+    &--green {
+      color: $green;
+      background:
+        rgba(52, 211, 153, 0.1);
+    }
+
+    &--blue {
+      color: #60a5fa;
+      background:
+        rgba(59, 130, 246, 0.1);
+    }
+
+    &--amber {
+      color: $yellow;
+      background:
+        rgba(251, 191, 36, 0.1);
+    }
+  }
+
+  &__content {
+    min-width: 0;
+
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+
+    span {
+      color: $text-muted;
+      font-size: 11px;
+    }
+
+    strong {
+      color: $text-primary;
+      font-size: 21px;
+      letter-spacing: -0.03em;
+    }
+  }
+}
+
+.empty-state {
+  padding: 42px 20px;
+
+  text-align: center;
+
+  border: 1px dashed
+    rgba(255, 255, 255, 0.1);
+
+  border-radius: $radius-md;
+
+  &__icon {
+    width: 48px;
+    height: 48px;
+
+    display: grid;
+    place-items: center;
+
+    margin: 0 auto 14px;
+
+    border-radius: 14px;
+
+    background:
+      rgba($purple-light, 0.1);
+
+    color: $purple-light;
+  }
+
+  h3 {
+    margin-bottom: 7px;
+
+    font-size: 14px;
+  }
+
+  p {
+    max-width: 320px;
+    margin: auto;
+
+    color: $text-muted;
+
+    font-size: 12px;
+    line-height: 1.6;
+  }
+}

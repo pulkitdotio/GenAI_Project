@@ -1,41 +1,35 @@
-import {
-  Navigate,
-  createBrowserRouter,
-} from 'react-router';
+import { Navigate, createBrowserRouter } from "react-router";
 
-import App from './App';
+import App from "./App";
 
-import Login from './features/auth/pages/login';
-import Register from './features/auth/pages/register';
+import Login from "./features/auth/pages/Login";
+import Register from "./features/auth/pages/Register";
 
-import ProtectedRoute from './features/auth/components/ProtectedRoute';
+import ProtectedRoute from "./features/auth/components/ProtectedRoute";
 
-import DashboardLayout from './layouts/DashboardLayout';
+import DashboardLayout from "./layouts/DashboardLayout";
 
-import Dashboard from './features/dashboard/Dashboard';
+import Dashboard from "./features/dashboard/Dashboard";
+
+import ComingSoon from "./components/common/ComingSoon";
 
 export const router = createBrowserRouter([
   {
-    path: '/',
+    path: "/",
     element: <App />,
     children: [
       {
         index: true,
-        element: (
-          <Navigate
-            to="/dashboard"
-            replace
-          />
-        ),
+        element: <Navigate to="/dashboard" replace />,
       },
 
       {
-        path: 'login',
+        path: "login",
         element: <Login />,
       },
 
       {
-        path: 'register',
+        path: "register",
         element: <Register />,
       },
 
@@ -43,34 +37,30 @@ export const router = createBrowserRouter([
         element: <ProtectedRoute />,
         children: [
           {
-            element: (
-              <DashboardLayout />
-            ),
+            element: <DashboardLayout />,
             children: [
               {
-                path: 'dashboard',
+                path: "dashboard",
                 element: <Dashboard />,
               },
 
-              /*
-               * Phase 2 routes.
-               *
-               * We intentionally leave the
-               * implementation for later.
-               */
+              {
+                path: "interviews/new",
+                element: <ComingSoon title="Create New Interview" />,
+              },
+
+              {
+                path: "interviews",
+                element: <ComingSoon title="My Interviews" />,
+              },
             ],
           },
         ],
       },
 
       {
-        path: '*',
-        element: (
-          <Navigate
-            to="/dashboard"
-            replace
-          />
-        ),
+        path: "*",
+        element: <Navigate to="/dashboard" replace />,
       },
     ],
   },

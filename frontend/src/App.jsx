@@ -1,12 +1,7 @@
-import { RouterProvider } from 'react-router'
-import { router } from './app.routes.jsx'
+import { Outlet } from 'react-router';
 
 function App() {
-  
-
-  return (
-    <RouterProvider router={router} />
-  )
+  return <Outlet />;
 }
 
-export default App
+export default App;

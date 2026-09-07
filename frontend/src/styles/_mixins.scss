@@ -1,0 +1,37 @@
+@use './variables' as *;
+
+@mixin glass-card {
+  background: rgba(17, 26, 45, 0.78);
+
+  border: 1px solid $border;
+
+  box-shadow: $shadow-card;
+
+  backdrop-filter: blur(18px);
+}
+
+@mixin gradient-text {
+  background: linear-gradient(
+    100deg,
+    $purple-light,
+    $purple-bright
+  );
+
+  -webkit-background-clip: text;
+  background-clip: text;
+
+  color: transparent;
+}
+
+@mixin focus-ring {
+  outline: none;
+
+  border-color: rgba(
+    $purple-light,
+    0.8
+  );
+
+  box-shadow:
+    0 0 0 3px
+    rgba($purple-light, 0.13);
+}
