@@ -1,14 +1,29 @@
 import {
   ArrowRight,
-  Building2,
   CalendarDays,
   FileText,
 } from 'lucide-react';
+
+import {
+  Link,
+  useNavigate,
+} from 'react-router';
 
 import Badge from '../../../components/ui/Badge';
 
 function formatDate(date) {
   if (!date) {
+    return 'Recently';
+  }
+
+  const parsedDate =
+    new Date(date);
+
+  if (
+    Number.isNaN(
+      parsedDate.getTime()
+    )
+  ) {
     return 'Recently';
   }
 
@@ -19,115 +34,196 @@ function formatDate(date) {
       day: 'numeric',
       year: 'numeric',
     }
-  ).format(new Date(date));
+  ).format(parsedDate);
 }
 
-function getCompanyInitials(title) {
-  return (
+function getInitials(title) {
+  if (!title) {
+    return 'AI';
+  }
+
+  const words =
     title
-      ?.split(' ')
-      .slice(0, 2)
-      .map((word) => word[0])
-      .join('')
-      .toUpperCase() || 'AI'
-  );
+      .trim()
+      .split(/\s+/)
+      .filter(Boolean);
+
+  return words
+    .slice(0, 2)
+    .map(
+      (word) =>
+        word.charAt(0)
+    )
+    .join('')
+    .toUpperCase();
 }
 
 function RecentInterviews({
-  interviews,
+  interviews = [],
 }) {
-  const recent = interviews.slice(0, 5);
+  const navigate = useNavigate();
+
+  const recent =
+    interviews.slice(0, 5);
+
+  const handleOpenInterview = (
+    interviewId
+  ) => {
+    if (!interviewId) {
+      return;
+    }
+
+    navigate(
+      `/interviews/report/${interviewId}`
+    );
+  };
 
   return (
     <section className="dashboard-section">
+
+      {/* Section heading */}
       <div className="section-heading">
+
         <div>
           <span className="section-eyebrow">
             Your preparation activity
           </span>
 
-          <h2>Recent Interviews</h2>
+          <h2>
+            Recent Interviews
+          </h2>
         </div>
 
-        <button
-          type="button"
+        <Link
+          to="/interviews"
           className="section-link"
         >
           View All
+
           <ArrowRight size={15} />
-        </button>
+        </Link>
+
       </div>
 
+      {/* Interview list */}
       <div className="interview-list">
+
         {recent.length === 0 ? (
+
           <div className="empty-state">
+
             <div className="empty-state__icon">
               <FileText size={23} />
             </div>
 
-            <h3>No interviews yet</h3>
+            <h3>
+              No interviews yet
+            </h3>
 
             <p>
               Create your first interview
               preparation report to see it
               here.
             </p>
-          </div>
-        ) : (
-          recent.map((interview) => (
-            <div
-              className="interview-row"
-              key={interview._id}
+
+            <Link
+              to="/interviews/new"
+              className="button button--primary button--small"
             >
-              <div className="company-avatar">
-                {getCompanyInitials(
-                  interview.title
-                )}
-              </div>
+              Create Interview
+            </Link>
 
-              <div className="interview-row__main">
-                <strong>
-                  {interview.title ||
-                    'Interview Preparation'}
-                </strong>
+          </div>
 
-                <div className="interview-meta">
-                  <span>
-                    <Building2 size={13} />
-                    AI Generated Report
-                  </span>
+        ) : (
 
-                  <span>
-                    <CalendarDays size={13} />
-                    {formatDate(
-                      interview.createdAt
-                    )}
-                  </span>
-                </div>
-              </div>
+          recent.map((interview) => {
 
-              <Badge variant="success">
-                Completed
-              </Badge>
+            const title =
+              interview?.title ||
+              'Interview Preparation';
 
-              <div className="match-score">
-                <strong>
-                  {interview.matchScore ?? 0}%
-                </strong>
+            const score =
+              typeof interview?.matchScore ===
+              'number'
+                ? interview.matchScore
+                : 0;
 
-                <span>Match Score</span>
-              </div>
-
-              <button
-                type="button"
-                className="row-arrow"
-                aria-label="Open interview"
+            return (
+              <article
+                className="interview-row"
+                key={interview._id}
               >
-                <ArrowRight size={17} />
-              </button>
-            </div>
-          ))
+
+                {/* Company/title avatar */}
+                <div className="company-avatar">
+                  {getInitials(title)}
+                </div>
+
+                {/* Main information */}
+                <div className="interview-row__main">
+
+                  <strong>
+                    {title}
+                  </strong>
+
+                  <div className="interview-meta">
+
+                    <span>
+                      AI Generated Report
+                    </span>
+
+                    <span>
+                      <CalendarDays
+                        size={13}
+                      />
+
+                      {formatDate(
+                        interview.createdAt
+                      )}
+                    </span>
+
+                  </div>
+
+                </div>
+
+                {/* Status */}
+                <Badge variant="success">
+                  Completed
+                </Badge>
+
+                {/* Score */}
+                <div className="match-score">
+
+                  <strong>
+                    {score}%
+                  </strong>
+
+                  <span>
+                    Match Score
+                  </span>
+
+                </div>
+
+                {/* Open */}
+                <button
+                  type="button"
+                  className="row-arrow"
+                  aria-label={`Open ${title}`}
+                  onClick={() =>
+                    handleOpenInterview(
+                      interview._id
+                    )
+                  }
+                >
+                  <ArrowRight size={17} />
+                </button>
+
+              </article>
+            );
+          })
         )}
+
       </div>
     </section>
   );

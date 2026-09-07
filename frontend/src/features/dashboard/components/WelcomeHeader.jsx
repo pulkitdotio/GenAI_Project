@@ -2,7 +2,6 @@ import {
   Bell,
   ChevronDown,
   Search,
-  Sparkles,
 } from 'lucide-react';
 
 import { useAuth } from '../../../context/AuthContext';
@@ -11,21 +10,35 @@ function WelcomeHeader() {
   const { user } = useAuth();
 
   const displayName =
-    user?.username || 'there';
+    user?.username ||
+    user?.name ||
+    'Candidate';
+
+  const initial =
+    displayName
+      .charAt(0)
+      .toUpperCase();
 
   return (
     <header className="dashboard-topbar">
+
+      {/* Search */}
       <div className="dashboard-search">
         <Search size={17} />
 
         <input
           type="search"
           placeholder="Search interviews..."
+          aria-label="Search interviews"
         />
       </div>
 
+      {/* Right side */}
       <div className="dashboard-topbar__actions">
+
+        {/* Notifications */}
         <button
+          type="button"
           className="icon-button"
           aria-label="Notifications"
         >
@@ -34,20 +47,29 @@ function WelcomeHeader() {
           <span className="notification-dot" />
         </button>
 
-        <div className="user-menu">
+        {/* User */}
+        <button
+          type="button"
+          className="user-menu"
+          aria-label="Open user menu"
+        >
           <div className="user-avatar">
-            {displayName
-              .charAt(0)
-              .toUpperCase()}
+            {initial}
           </div>
 
           <div className="user-menu__info">
-            <strong>{displayName}</strong>
-            <span>Candidate</span>
+            <strong>
+              {displayName}
+            </strong>
+
+            <span>
+              Candidate
+            </span>
           </div>
 
           <ChevronDown size={15} />
-        </div>
+        </button>
+
       </div>
     </header>
   );

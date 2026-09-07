@@ -15,6 +15,10 @@
     $bg-primary;
 }
 
+/* =========================================
+   SIDEBAR
+========================================= */
+
 .sidebar {
   position: fixed;
 
@@ -52,6 +56,7 @@
 
   &__label {
     padding: 0 11px;
+
     margin-bottom: 8px;
 
     color: #59657d;
@@ -60,6 +65,7 @@
     font-weight: 700;
 
     text-transform: uppercase;
+
     letter-spacing: 0.12em;
 
     &--spaced {
@@ -77,26 +83,31 @@
 }
 
 .sidebar-link {
+  width: 100%;
+  min-height: 38px;
+
   display: flex;
   align-items: center;
+
   gap: 11px;
-
-  width: 100%;
-
-  min-height: 38px;
 
   padding: 0 11px;
 
   margin-bottom: 3px;
 
+  border: 0;
   border-radius: 8px;
 
   background: transparent;
 
   color: #8c97ad;
 
+  font-family: inherit;
+
   font-size: 11px;
   font-weight: 500;
+
+  text-decoration: none;
 
   transition:
     color $transition,
@@ -104,7 +115,9 @@
 
   &:hover:not(:disabled) {
     color: $text-primary;
-    background: rgba(255, 255, 255, 0.035);
+
+    background:
+      rgba(255, 255, 255, 0.035);
   }
 
   &--active {
@@ -127,7 +140,9 @@
   }
 
   &--disabled {
-    opacity: 0.5;
+    opacity: 0.45;
+
+    cursor: not-allowed;
   }
 }
 
@@ -136,11 +151,19 @@
 
   &:hover {
     color: #fca5a5 !important;
+
+    background:
+      rgba(248, 113, 113, 0.05);
   }
 }
 
+/* =========================================
+   MAIN
+========================================= */
+
 .app-main {
-  width: calc(100% - #{$sidebar-width});
+  width:
+    calc(100% - #{$sidebar-width});
 
   margin-left: $sidebar-width;
 
@@ -150,6 +173,10 @@
 .dashboard-page {
   min-height: 100vh;
 }
+
+/* =========================================
+   TOPBAR
+========================================= */
 
 .dashboard-topbar {
   height: 72px;
@@ -170,17 +197,18 @@
   &__actions {
     display: flex;
     align-items: center;
+
     gap: 20px;
   }
 }
 
 .dashboard-search {
   width: min(300px, 40vw);
-
   height: 36px;
 
   display: flex;
   align-items: center;
+
   gap: 9px;
 
   padding: 0 11px;
@@ -194,6 +222,18 @@
 
   color: #66738c;
 
+  transition:
+    border-color $transition,
+    background $transition;
+
+  &:focus-within {
+    border-color:
+      rgba($purple-light, 0.35);
+
+    background:
+      rgba(17, 26, 45, 0.95);
+  }
+
   input {
     width: 100%;
 
@@ -203,6 +243,8 @@
     background: transparent;
 
     color: $text-primary;
+
+    font-family: inherit;
 
     font-size: 11px;
 
@@ -215,13 +257,15 @@
 .icon-button {
   position: relative;
 
-  display: grid;
-  place-items: center;
-
   width: 32px;
   height: 32px;
 
+  display: grid;
+  place-items: center;
+
   padding: 0;
+
+  border: 0;
 
   border-radius: 8px;
 
@@ -229,9 +273,15 @@
 
   color: #8c97ad;
 
+  transition:
+    color $transition,
+    background $transition;
+
   &:hover {
     color: white;
-    background: rgba(255, 255, 255, 0.04);
+
+    background:
+      rgba(255, 255, 255, 0.04);
   }
 }
 
@@ -255,23 +305,39 @@
 .user-menu {
   display: flex;
   align-items: center;
+
   gap: 9px;
 
+  padding: 0;
+
+  border: 0;
+
+  background: transparent;
+
   color: #8d98ad;
+
+  font-family: inherit;
+
+  cursor: pointer;
 
   &__info {
     display: flex;
     flex-direction: column;
+
     gap: 2px;
+
+    text-align: left;
 
     strong {
       color: #dfe4ee;
+
       font-size: 11px;
       font-weight: 600;
     }
 
     span {
       color: #626e85;
+
       font-size: 9px;
     }
   }
@@ -297,9 +363,18 @@
 
   font-size: 11px;
   font-weight: 700;
+
+  box-shadow:
+    0 4px 15px
+    rgba(124, 58, 237, 0.2);
 }
 
+/* =========================================
+   CONTENT
+========================================= */
+
 .dashboard-content {
+  width: 100%;
   max-width: 1180px;
 
   margin: 0 auto;
@@ -312,12 +387,15 @@
   align-items: flex-end;
   justify-content: space-between;
 
+  gap: 30px;
+
   margin-bottom: 24px;
 }
 
 .dashboard-greeting {
   display: flex;
   align-items: center;
+
   gap: 7px;
 
   margin-bottom: 8px;
@@ -329,6 +407,8 @@
 }
 
 .dashboard-intro h1 {
+  margin: 0;
+
   font-size:
     clamp(25px, 3vw, 34px);
 
@@ -342,13 +422,21 @@
 }
 
 .dashboard-motivation {
+  margin: 0;
+
   color: #68738a;
 
   font-size: 11px;
   line-height: 1.7;
+
   text-align: right;
+
   font-style: italic;
 }
+
+/* =========================================
+   CREATE BANNER
+========================================= */
 
 .create-banner {
   position: relative;
@@ -391,21 +479,23 @@
 
   &__content {
     position: relative;
+
     z-index: 2;
 
     display: flex;
     align-items: flex-start;
+
     gap: 14px;
   }
 
   &__icon {
-    display: grid;
-    place-items: center;
-
     width: 40px;
     height: 40px;
 
     flex: 0 0 40px;
+
+    display: grid;
+    place-items: center;
 
     border-radius: 11px;
 
@@ -426,20 +516,24 @@
     font-weight: 700;
 
     text-transform: uppercase;
+
     letter-spacing: 0.08em;
   }
 
   h2 {
-    margin-bottom: 6px;
+    margin: 0 0 6px;
 
     color: white;
 
     font-size: 15px;
+
     letter-spacing: -0.02em;
   }
 
   p {
     max-width: 540px;
+
+    margin: 0;
 
     color: #c0b8d7;
 
@@ -449,6 +543,7 @@
 
   .button {
     position: relative;
+
     z-index: 2;
 
     flex: 0 0 auto;
@@ -485,6 +580,10 @@
   }
 }
 
+/* =========================================
+   STATS
+========================================= */
+
 .stats-grid {
   display: grid;
 
@@ -495,6 +594,10 @@
 
   margin-bottom: 30px;
 }
+
+/* =========================================
+   SECTION
+========================================= */
 
 .dashboard-section {
   margin-top: 10px;
@@ -519,28 +622,50 @@
   font-weight: 700;
 
   text-transform: uppercase;
+
   letter-spacing: 0.08em;
 }
 
 .section-heading h2 {
+  margin: 0;
+
   font-size: 17px;
+
   letter-spacing: -0.025em;
 }
 
 .section-link {
   display: inline-flex;
   align-items: center;
+
   gap: 5px;
 
   padding: 0;
+
+  border: 0;
 
   background: transparent;
 
   color: #a78bfa;
 
+  font-family: inherit;
+
   font-size: 10px;
   font-weight: 600;
+
+  text-decoration: none;
+
+  transition:
+    color $transition;
+
+  &:hover {
+    color: #c4b5fd;
+  }
 }
+
+/* =========================================
+   INTERVIEW LIST
+========================================= */
 
 .interview-list {
   display: flex;
@@ -549,6 +674,7 @@
   overflow: hidden;
 
   border: 1px solid $border;
+
   border-radius: $radius-md;
 
   background:
@@ -561,8 +687,11 @@
   display: grid;
 
   grid-template-columns:
-    40px minmax(180px, 1fr)
-    auto 75px 25px;
+    40px
+    minmax(180px, 1fr)
+    auto
+    75px
+    25px;
 
   align-items: center;
 
@@ -598,7 +727,10 @@
 
       font-size: 12px;
 
+      font-weight: 600;
+
       text-overflow: ellipsis;
+
       white-space: nowrap;
     }
   }
@@ -632,6 +764,7 @@
 .interview-meta {
   display: flex;
   align-items: center;
+
   gap: 12px;
 
   color: #647089;
@@ -641,6 +774,7 @@
   span {
     display: inline-flex;
     align-items: center;
+
     gap: 4px;
   }
 }
@@ -649,27 +783,32 @@
   display: flex;
   flex-direction: column;
   align-items: flex-end;
+
   gap: 2px;
 
   strong {
     color: #dce5f5;
+
     font-size: 14px;
   }
 
   span {
     color: #65718a;
+
     font-size: 8px;
   }
 }
 
 .row-arrow {
-  display: grid;
-  place-items: center;
-
   width: 25px;
   height: 25px;
 
+  display: grid;
+  place-items: center;
+
   padding: 0;
+
+  border: 0;
 
   border-radius: 6px;
 
@@ -677,12 +816,21 @@
 
   color: #5e6b82;
 
+  transition:
+    color $transition,
+    background $transition;
+
   &:hover {
     color: white;
+
     background:
       rgba(255, 255, 255, 0.05);
   }
 }
+
+/* =========================================
+   MOBILE
+========================================= */
 
 .mobile-menu-button {
   display: none;
@@ -699,18 +847,24 @@
 
   place-items: center;
 
+  padding: 0;
+
+  border: 1px solid $border;
+
   border-radius: 10px;
 
   background: $surface;
 
   color: white;
-
-  border: 1px solid $border;
 }
 
 .sidebar-overlay {
   display: none;
 }
+
+/* =========================================
+   TABLET
+========================================= */
 
 @media (max-width: 1100px) {
   .stats-grid {
@@ -720,13 +874,23 @@
 
   .create-banner {
     align-items: flex-start;
+
     flex-direction: column;
+  }
+
+  .create-banner .button {
+    align-self: flex-start;
   }
 }
 
+/* =========================================
+   MOBILE SIDEBAR
+========================================= */
+
 @media (max-width: 800px) {
   .sidebar {
-    transform: translateX(-100%);
+    transform:
+      translateX(-100%);
 
     transition:
       transform 220ms ease;
@@ -736,7 +900,8 @@
       rgba(0, 0, 0, 0.35);
 
     &--open {
-      transform: translateX(0);
+      transform:
+        translateX(0);
     }
   }
 
@@ -744,11 +909,17 @@
     display: block;
 
     position: fixed;
+
     inset: 0;
 
     z-index: 40;
 
+    width: 100%;
+    height: 100%;
+
     padding: 0;
+
+    border: 0;
 
     background:
       rgba(0, 0, 0, 0.5);
@@ -760,6 +931,7 @@
 
   .app-main {
     width: 100%;
+
     margin-left: 0;
   }
 
@@ -767,6 +939,10 @@
     padding-left: 66px;
   }
 }
+
+/* =========================================
+   SMALL MOBILE
+========================================= */
 
 @media (max-width: 650px) {
   .dashboard-content {
@@ -776,6 +952,7 @@
 
   .dashboard-topbar {
     height: 64px;
+
     padding-right: 16px;
   }
 
@@ -789,7 +966,9 @@
 
   .dashboard-intro {
     align-items: flex-start;
+
     flex-direction: column;
+
     gap: 13px;
   }
 
@@ -803,7 +982,8 @@
 
   .interview-row {
     grid-template-columns:
-      38px minmax(0, 1fr)
+      38px
+      minmax(0, 1fr)
       25px;
 
     .badge,
@@ -811,7 +991,15 @@
       display: none;
     }
   }
+
+  .interview-meta {
+    gap: 8px;
+  }
 }
+
+/* =========================================
+   VERY SMALL MOBILE
+========================================= */
 
 @media (max-width: 430px) {
   .dashboard-search {
@@ -828,5 +1016,11 @@
 
   .create-banner .button {
     width: 100%;
+
+    justify-content: center;
+  }
+
+  .dashboard-intro h1 {
+    font-size: 27px;
   }
 }
