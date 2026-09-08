@@ -7,32 +7,27 @@ import {
   Settings,
   User,
   X,
-} from 'lucide-react';
+} from "lucide-react";
 
-import {
-  NavLink,
-  Outlet,
-  useNavigate,
-} from 'react-router';
+import { NavLink, Outlet, useNavigate } from "react-router";
 
-import { useState } from 'react';
+import { useState } from "react";
 
-import Logo from '../components/common/Logo';
-import { useAuth } from '../context/AuthContext';
+import Logo from "../components/common/Logo";
+import { useAuth } from "../context/AuthContext";
 
 function DashboardLayout() {
   const navigate = useNavigate();
 
   const { logout } = useAuth();
 
-  const [sidebarOpen, setSidebarOpen] =
-    useState(false);
+  const [sidebarOpen, setSidebarOpen] = useState(false);
 
   const handleLogout = async () => {
     try {
       await logout();
     } finally {
-      navigate('/login', {
+      navigate("/login", {
         replace: true,
       });
     }
@@ -43,66 +38,37 @@ function DashboardLayout() {
   };
 
   const getNavClass = ({ isActive }) =>
-    [
-      'sidebar-link',
-      isActive
-        ? 'sidebar-link--active'
-        : '',
-    ]
+    ["sidebar-link", isActive ? "sidebar-link--active" : ""]
       .filter(Boolean)
-      .join(' ');
+      .join(" ");
 
   return (
     <div className="app-shell">
-
       {/* Mobile menu button */}
       <button
         type="button"
         className="mobile-menu-button"
-        onClick={() =>
-          setSidebarOpen(
-            (current) => !current
-          )
-        }
-        aria-label={
-          sidebarOpen
-            ? 'Close navigation'
-            : 'Open navigation'
-        }
+        onClick={() => setSidebarOpen((current) => !current)}
+        aria-label={sidebarOpen ? "Close navigation" : "Open navigation"}
         aria-expanded={sidebarOpen}
       >
-        {sidebarOpen ? (
-          <X size={21} />
-        ) : (
-          <Menu size={21} />
-        )}
+        {sidebarOpen ? <X size={21} /> : <Menu size={21} />}
       </button>
 
       {/* Sidebar */}
       <aside
-        className={[
-          'sidebar',
-          sidebarOpen
-            ? 'sidebar--open'
-            : '',
-        ]
+        className={["sidebar", sidebarOpen ? "sidebar--open" : ""]
           .filter(Boolean)
-          .join(' ')}
+          .join(" ")}
       >
-
         {/* Logo */}
         <div className="sidebar__header">
           <Logo />
         </div>
 
         {/* Navigation */}
-        <nav
-          className="sidebar__nav"
-          aria-label="Main navigation"
-        >
-          <span className="sidebar__label">
-            Workspace
-          </span>
+        <nav className="sidebar__nav" aria-label="Main navigation">
+          <span className="sidebar__label">Workspace</span>
 
           <NavLink
             to="/dashboard"
@@ -131,9 +97,7 @@ function DashboardLayout() {
             <span>My Interviews</span>
           </NavLink>
 
-          <span className="sidebar__label sidebar__label--spaced">
-            Account
-          </span>
+          <span className="sidebar__label sidebar__label--spaced">Account</span>
 
           {/* Phase 3 */}
           <button
@@ -145,7 +109,6 @@ function DashboardLayout() {
             <span>Profile</span>
           </button>
 
-          {/* Phase 3 */}
           <button
             type="button"
             className="sidebar-link sidebar-link--disabled"

@@ -1,4 +1,7 @@
-import { Navigate, createBrowserRouter } from 'react-router';
+import {
+  Navigate,
+  createBrowserRouter,
+} from 'react-router';
 
 import App from './App';
 
@@ -11,77 +14,104 @@ import DashboardLayout from './layouts/DashboardLayout';
 
 import Dashboard from './features/dashboard/Dashboard';
 
-import ComingSoon from './components/common/ComingSoon';
+import CreateInterview from './features/interview/pages/CreateInterview';
+import InterviewHistory from './features/interview/pages/InterviewHistory';
+import InterviewReport from './features/interview/pages/InterviewReport';
 
-export const router = createBrowserRouter([
-  {
-    path: '/',
-    element: <App />,
-    children: [
-      {
-        index: true,
-        element: <Navigate to="/dashboard" replace />,
-      },
+import TailoredResume from './features/resume/pages/TailoredResume';
 
-      // -------------------------
-      // Public routes
-      // -------------------------
+export const router =
+  createBrowserRouter([
+    {
+      path: '/',
+      element: <App />,
+      children: [
+        {
+          index: true,
+          element: (
+            <Navigate
+              to="/dashboard"
+              replace
+            />
+          ),
+        },
 
-      {
-        path: 'login',
-        element: <Login />,
-      },
+        // -------------------------
+        // Public routes
+        // -------------------------
 
-      {
-        path: 'register',
-        element: <Register />,
-      },
+        {
+          path: 'login',
+          element: <Login />,
+        },
 
-      // -------------------------
-      // Protected application
-      // -------------------------
+        {
+          path: 'register',
+          element: <Register />,
+        },
 
-      {
-        element: <ProtectedRoute />,
-        children: [
-          {
-            element: <DashboardLayout />,
-            children: [
-              {
-                path: 'dashboard',
-                element: <Dashboard />,
-              },
+        // -------------------------
+        // Protected routes
+        // -------------------------
 
-              {
-                path: 'interviews/new',
-                element: (
-                  <ComingSoon
-                    title="Create New Interview"
-                  />
-                ),
-              },
+        {
+          element: <ProtectedRoute />,
+          children: [
+            {
+              element: (
+                <DashboardLayout />
+              ),
+              children: [
+                {
+                  path: 'dashboard',
+                  element: <Dashboard />,
+                },
 
-              {
-                path: 'interviews',
-                element: (
-                  <ComingSoon
-                    title="My Interviews"
-                  />
-                ),
-              },
-            ],
-          },
-        ],
-      },
+                {
+                  path: 'interviews/new',
+                  element: (
+                    <CreateInterview />
+                  ),
+                },
 
-      // -------------------------
-      // Unknown routes
-      // -------------------------
+                {
+                  path: 'interviews',
+                  element: (
+                    <InterviewHistory />
+                  ),
+                },
 
-      {
-        path: '*',
-        element: <Navigate to="/dashboard" replace />,
-      },
-    ],
-  },
-]);
+                {
+                  path: 'interviews/report/:interviewId',
+                  element: (
+                    <InterviewReport />
+                  ),
+                },
+
+                {
+                  path: 'resume/:interviewId',
+                  element: (
+                    <TailoredResume />
+                  ),
+                },
+              ],
+            },
+          ],
+        },
+
+        // -------------------------
+        // Unknown routes
+        // -------------------------
+
+        {
+          path: '*',
+          element: (
+            <Navigate
+              to="/dashboard"
+              replace
+            />
+          ),
+        },
+      ],
+    },
+  ]);

@@ -88,3 +88,69 @@
     color: $text-primary;
   }
 }
+
+.form-textarea {
+  width: 100%;
+  min-height: 115px;
+
+  resize: vertical;
+
+  padding: 12px 13px;
+
+  border: 1px solid
+    rgba(255, 255, 255, 0.09);
+
+  border-radius: $radius-sm;
+
+  outline: none;
+
+  background:
+    rgba(24, 34, 55, 0.9);
+
+  color: $text-primary;
+
+  font-family: inherit;
+
+  font-size: 12px;
+  line-height: 1.55;
+
+  transition:
+    border-color $transition,
+    box-shadow $transition,
+    background $transition;
+
+  &::placeholder {
+    color: #68748b;
+  }
+
+  &:hover {
+    border-color:
+      rgba(255, 255, 255, 0.14);
+  }
+
+  &:focus {
+    @include focus-ring;
+
+    background: $surface-light;
+  }
+
+  &--error {
+    border-color:
+      rgba($red, 0.65);
+  }
+}
+
+.textarea-footer {
+  min-height: 15px;
+
+  display: flex;
+  justify-content: space-between;
+}
+
+.textarea-count {
+  margin-left: auto;
+
+  color: #59657b;
+
+  font-size: 9px;
+}
