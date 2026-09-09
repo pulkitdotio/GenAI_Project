@@ -7,19 +7,43 @@ import {
   X,
 } from "lucide-react";
 
-import { NavLink, Outlet, useNavigate } from "react-router";
+import { NavLink, Outlet, useLocation, useNavigate } from "react-router";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 import Logo from "../components/common/Logo";
 import { useAuth } from "../context/useAuth";
 
 function DashboardLayout() {
   const navigate = useNavigate();
+  const location = useLocation();
 
   const { logout } = useAuth();
 
   const [sidebarOpen, setSidebarOpen] = useState(false);
+
+  const isInterviewHistoryContext =
+    location.pathname === "/interviews" ||
+    location.pathname.startsWith("/interviews/report/") ||
+    location.pathname.startsWith("/resume/");
+
+  useEffect(() => {
+    if (!sidebarOpen) {
+      return undefined;
+    }
+
+    const closeOnEscape = (event) => {
+      if (event.key === "Escape") {
+        setSidebarOpen(false);
+      }
+    };
+
+    window.addEventListener("keydown", closeOnEscape);
+
+    return () => {
+      window.removeEventListener("keydown", closeOnEscape);
+    };
+  }, [sidebarOpen]);
 
   const handleLogout = async () => {
     try {
@@ -70,6 +94,7 @@ function DashboardLayout() {
 
           <NavLink
             to="/dashboard"
+            end
             onClick={closeSidebar}
             className={getNavClass}
           >
@@ -79,6 +104,7 @@ function DashboardLayout() {
 
           <NavLink
             to="/interviews/new"
+            end
             onClick={closeSidebar}
             className={getNavClass}
           >
@@ -88,8 +114,20 @@ function DashboardLayout() {
 
           <NavLink
             to="/interviews"
+            end
             onClick={closeSidebar}
-            className={getNavClass}
+            className={({ isActive }) =>
+              getNavClass({
+                isActive:
+                  isActive ||
+                  isInterviewHistoryContext,
+              })
+            }
+            aria-current={
+              isInterviewHistoryContext
+                ? "page"
+                : undefined
+            }
           >
             <BarChart3 size={17} />
             <span>My Interviews</span>
