@@ -1,5 +1,6 @@
 import {
   forwardRef,
+  useId,
 } from 'react';
 
 const Textarea = forwardRef(
@@ -16,6 +17,9 @@ const Textarea = forwardRef(
     },
     ref
   ) {
+    const generatedId = useId();
+    const textareaId = props.id || generatedId;
+
     const currentLength =
       typeof value === 'string'
         ? value.length
@@ -25,7 +29,7 @@ const Textarea = forwardRef(
       <div className="form-field textarea-field">
 
         {label && (
-          <label className="form-label">
+          <label className="form-label" htmlFor={textareaId}>
             {label}
 
             {required && (
@@ -38,6 +42,9 @@ const Textarea = forwardRef(
 
         <textarea
           ref={ref}
+          id={textareaId}
+          aria-invalid={Boolean(error)}
+          aria-describedby={error ? `${textareaId}-error` : undefined}
           className={[
             'form-textarea',
             error
@@ -54,7 +61,7 @@ const Textarea = forwardRef(
 
         <div className="textarea-footer">
           {error && (
-            <span className="field-error">
+            <span className="field-error" id={`${textareaId}-error`}>
               {error}
             </span>
           )}

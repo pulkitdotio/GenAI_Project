@@ -1,10 +1,4 @@
-import {
-  Bell,
-  ChevronDown,
-  Search,
-} from 'lucide-react';
-
-import { useAuth } from '../../../context/AuthContext';
+import { useAuth } from '../../../context/useAuth';
 
 function WelcomeHeader() {
   const { user } = useAuth();
@@ -22,37 +16,15 @@ function WelcomeHeader() {
   return (
     <header className="dashboard-topbar">
 
-      {/* Search */}
-      <div className="dashboard-search">
-        <Search size={17} />
-
-        <input
-          type="search"
-          placeholder="Search interviews..."
-          aria-label="Search interviews"
-        />
+      <div className="dashboard-topbar__context">
+        <span>Workspace</span>
+        <strong>Interview preparation</strong>
       </div>
 
       {/* Right side */}
       <div className="dashboard-topbar__actions">
 
-        {/* Notifications */}
-        <button
-          type="button"
-          className="icon-button"
-          aria-label="Notifications"
-        >
-          <Bell size={19} />
-
-          <span className="notification-dot" />
-        </button>
-
-        {/* User */}
-        <button
-          type="button"
-          className="user-menu"
-          aria-label="Open user menu"
-        >
+        <div className="user-menu" aria-label={`Signed in as ${displayName}`}>
           <div className="user-avatar">
             {initial}
           </div>
@@ -67,8 +39,7 @@ function WelcomeHeader() {
             </span>
           </div>
 
-          <ChevronDown size={15} />
-        </button>
+        </div>
 
       </div>
     </header>

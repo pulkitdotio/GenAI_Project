@@ -1,11 +1,11 @@
 import { useState } from 'react';
-import { Eye, EyeOff, LockKeyhole, Mail } from 'lucide-react';
+import { Eye, EyeOff } from 'lucide-react';
 import { useNavigate } from 'react-router';
 
 import Button from '../../../components/ui/Button';
 import Input from '../../../components/ui/Input';
 import ErrorMessage from '../../../components/common/ErrorMessage';
-import { useAuth } from '../../../context/AuthContext';
+import { useAuth } from '../../../context/useAuth';
 
 function LoginForm() {
   const navigate = useNavigate();

@@ -1,4 +1,4 @@
-import { forwardRef } from 'react';
+import { forwardRef, useId } from 'react';
 
 const Input = forwardRef(function Input(
   {
@@ -10,10 +10,13 @@ const Input = forwardRef(function Input(
   },
   ref
 ) {
+  const generatedId = useId();
+  const inputId = props.id || generatedId;
+
   return (
     <div className="form-field">
       {label && (
-        <label className="form-label">
+        <label className="form-label" htmlFor={inputId}>
           {label}
 
           {required && (
@@ -24,6 +27,9 @@ const Input = forwardRef(function Input(
 
       <input
         ref={ref}
+        id={inputId}
+        aria-invalid={Boolean(error)}
+        aria-describedby={error ? `${inputId}-error` : undefined}
         className={[
           'form-input',
           error ? 'form-input--error' : '',
@@ -35,7 +41,7 @@ const Input = forwardRef(function Input(
       />
 
       {error && (
-        <span className="field-error">
+        <span className="field-error" id={`${inputId}-error`}>
           {error}
         </span>
       )}

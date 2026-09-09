@@ -5,7 +5,7 @@ import { useNavigate } from 'react-router';
 import Button from '../../../components/ui/Button';
 import Input from '../../../components/ui/Input';
 import ErrorMessage from '../../../components/common/ErrorMessage';
-import { useAuth } from '../../../context/AuthContext';
+import { useAuth } from '../../../context/useAuth';
 
 function RegisterForm() {
   const navigate = useNavigate();

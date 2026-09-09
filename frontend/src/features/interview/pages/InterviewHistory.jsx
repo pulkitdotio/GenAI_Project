@@ -1,7 +1,6 @@
 import {
   Plus,
   Search,
-  SlidersHorizontal,
 } from 'lucide-react';
 
 import {
@@ -145,17 +144,6 @@ function InterviewHistory() {
             }
           />
         </div>
-
-        <button
-          type="button"
-          className="history-filter"
-        >
-          <SlidersHorizontal
-            size={15}
-          />
-
-          All Status
-        </button>
 
       </div>
 

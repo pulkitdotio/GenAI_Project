@@ -4,8 +4,6 @@ import {
   LayoutDashboard,
   LogOut,
   Menu,
-  Settings,
-  User,
   X,
 } from "lucide-react";
 
@@ -14,7 +12,7 @@ import { NavLink, Outlet, useNavigate } from "react-router";
 import { useState } from "react";
 
 import Logo from "../components/common/Logo";
-import { useAuth } from "../context/AuthContext";
+import { useAuth } from "../context/useAuth";
 
 function DashboardLayout() {
   const navigate = useNavigate();
@@ -97,26 +95,6 @@ function DashboardLayout() {
             <span>My Interviews</span>
           </NavLink>
 
-          <span className="sidebar__label sidebar__label--spaced">Account</span>
-
-          {/* Phase 3 */}
-          <button
-            type="button"
-            className="sidebar-link sidebar-link--disabled"
-            disabled
-          >
-            <User size={17} />
-            <span>Profile</span>
-          </button>
-
-          <button
-            type="button"
-            className="sidebar-link sidebar-link--disabled"
-            disabled
-          >
-            <Settings size={17} />
-            <span>Settings</span>
-          </button>
         </nav>
 
         {/* Logout */}

@@ -1,21 +1,16 @@
 import {
   ArrowLeft,
-  Award,
-  BookOpen,
   CheckCircle2,
   ChevronDown,
   CircleAlert,
   FileText,
   Lightbulb,
-  ListChecks,
   Sparkles,
   Target,
-  UserRound,
 } from 'lucide-react';
 
 import {
   Link,
-  useNavigate,
   useParams,
 } from 'react-router';
 
@@ -213,8 +208,6 @@ function InterviewReport() {
   const {
     interviewId,
   } = useParams();
-
-  const navigate = useNavigate();
 
   const [report, setReport] =
     useState(null);

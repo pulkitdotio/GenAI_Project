@@ -1,7 +1,5 @@
 import {
-  createContext,
   useCallback,
-  useContext,
   useEffect,
   useMemo,
   useState,
@@ -13,8 +11,7 @@ import {
   logoutUser,
   registerUser,
 } from '../features/auth/auth.api';
-
-const AuthContext = createContext(null);
+import { AuthContext } from './auth-context';
 
 export function AuthProvider({ children }) {
   const [user, setUser] = useState(null);
@@ -33,8 +30,29 @@ export function AuthProvider({ children }) {
   }, []);
 
   useEffect(() => {
-    loadUser();
-  }, [loadUser]);
+    let active = true;
+
+    getCurrentUser()
+      .then((response) => {
+        if (active) {
+          setUser(response.user);
+        }
+      })
+      .catch(() => {
+        if (active) {
+          setUser(null);
+        }
+      })
+      .finally(() => {
+        if (active) {
+          setLoading(false);
+        }
+      });
+
+    return () => {
+      active = false;
+    };
+  }, []);
 
   const login = async (credentials) => {
     const response = await loginUser(credentials);
@@ -80,14 +98,3 @@ export function AuthProvider({ children }) {
   );
 }
 
-export function useAuth() {
-  const context = useContext(AuthContext);
-
-  if (!context) {
-    throw new Error(
-      'useAuth must be used inside AuthProvider'
-    );
-  }
-
-  return context;
-}

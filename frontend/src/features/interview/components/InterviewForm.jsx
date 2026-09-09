@@ -1,7 +1,4 @@
-import { useState } from 'react';
-
 import {
-  Building2,
   BriefcaseBusiness,
   FileText,
 } from 'lucide-react';
