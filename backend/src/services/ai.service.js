@@ -1753,11 +1753,6 @@ function sanitizeGeneratedHTML(html) {
     );
 }
 
-/*
-|--------------------------------------------------------------------------
-| HTML → PDF
-|--------------------------------------------------------------------------
-*/
 
 async function convertHTMLToPDF(html) {
   const browser =
