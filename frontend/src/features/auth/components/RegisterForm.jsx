@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { Eye, EyeOff } from 'lucide-react';
-import { useNavigate } from 'react-router';
+import { useLocation, useNavigate } from 'react-router';
+import { getAuthDestination } from '../authRedirect';
 
 import Button from '../../../components/ui/Button';
 import Input from '../../../components/ui/Input';
@@ -9,6 +10,7 @@ import { useAuth } from '../../../context/useAuth';
 
 function RegisterForm() {
   const navigate = useNavigate();
+  const location = useLocation();
 
   const { register } = useAuth();
 
@@ -85,7 +87,7 @@ function RegisterForm() {
         password: form.password,
       });
 
-      navigate('/dashboard', {
+      navigate(getAuthDestination(location.state?.from), {
         replace: true,
       });
     } catch (error) {

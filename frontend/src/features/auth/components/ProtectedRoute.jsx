@@ -1,6 +1,7 @@
 import { Navigate, Outlet, useLocation } from 'react-router';
 import { useAuth } from '../../../context/useAuth';
 import PageLoader from '../../../components/common/PageLoader';
+import { getAuthState } from '../authRedirect';
 
 function ProtectedRoute() {
   const {
@@ -19,9 +20,7 @@ function ProtectedRoute() {
       <Navigate
         to="/login"
         replace
-        state={{
-          from: location.pathname,
-        }}
+        state={getAuthState(location.pathname + location.search + location.hash)}
       />
     );
   }

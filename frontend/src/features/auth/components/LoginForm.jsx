@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { Eye, EyeOff } from 'lucide-react';
-import { useNavigate } from 'react-router';
+import { useLocation, useNavigate } from 'react-router';
+import { getAuthDestination } from '../authRedirect';
 
 import Button from '../../../components/ui/Button';
 import Input from '../../../components/ui/Input';
@@ -9,6 +10,7 @@ import { useAuth } from '../../../context/useAuth';
 
 function LoginForm() {
   const navigate = useNavigate();
+  const location = useLocation();
 
   const { login } = useAuth();
 
@@ -49,7 +51,7 @@ function LoginForm() {
     try {
       await login(form);
 
-      navigate('/dashboard', {
+      navigate(getAuthDestination(location.state?.from), {
         replace: true,
       });
     } catch (error) {

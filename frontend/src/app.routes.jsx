@@ -1,9 +1,10 @@
 import {
-  Navigate,
   createBrowserRouter,
 } from 'react-router';
 
 import App from './App';
+import Home from './features/home/pages/Home';
+import NotFound from './features/home/pages/NotFound';
 
 import Login from './features/auth/pages/Login';
 import Register from './features/auth/pages/Register';
@@ -28,12 +29,7 @@ export const router =
       children: [
         {
           index: true,
-          element: (
-            <Navigate
-              to="/dashboard"
-              replace
-            />
-          ),
+          element: <Home />,
         },
 
         // -------------------------
@@ -105,12 +101,7 @@ export const router =
 
         {
           path: '*',
-          element: (
-            <Navigate
-              to="/dashboard"
-              replace
-            />
-          ),
+          element: <NotFound />,
         },
       ],
     },
