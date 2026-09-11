@@ -6,6 +6,7 @@ const { getAllowedOrigins } = require('./config/origins');
 const { protectOrigin } = require('./middlewares/origin.middleware');
 const { ContentError } = require('./utils/content');
 const AppError = require('./utils/appError');
+const { generalApiLimiter } = require('./middlewares/rateLimit.middleware');
 
 // Validate before loading routes or opening a database/listening socket.
 getAuthConfig();
@@ -52,6 +53,7 @@ app.get('/health', (req, res) => {
     });
 });
 
+app.use('/api', generalApiLimiter);
 app.use('/api/auth', authRouter);
 app.use('/api/interview', interviewRouter);
 
