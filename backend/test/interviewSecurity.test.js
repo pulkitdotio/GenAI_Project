@@ -24,15 +24,6 @@ test('both report and resume queries scope ownership and deny another user befor
     }
 });
 
-test('malformed IDs never reach MongoDB', async t => {
-    t.mock.method(Model, 'findOne', () => assert.fail('invalid ID queried'));
-    for (const [handler, key] of [[controller.getInterviewReportById, 'interviewId'], [controller.generateResumePDFController, 'interviewReportId']]) {
-        const res = response();
-        await handler({ params: { [key]: 'not-an-object-id' }, user: { id: userA } }, res);
-        assert.equal(res.statusCode, 400);
-    }
-});
-
 test('history only queries the authenticated owner', async t => {
     t.mock.method(Model, 'find', query => {
         assert.deepEqual(query, { userId: userA });

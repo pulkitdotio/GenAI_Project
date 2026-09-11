@@ -1,8 +1,9 @@
 const limits = require('../config/contentLimits');
+const AppError = require('./appError');
 
-class ContentError extends Error {
+class ContentError extends AppError {
     constructor(status, message) {
-        super(message);
+        super(status, status === 413 ? 'CONTENT_TOO_LARGE' : 'INVALID_CONTENT', message);
         this.name = 'ContentError';
         this.status = status;
     }

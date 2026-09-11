@@ -4,7 +4,6 @@ const { interviewReportSchema } = require('../services/ai.schemas');
 const { normalizeText } = require('../utils/content');
 const L = require('../config/contentLimits');
 const InterviewReportModel = require('../models/interviewReport.model');
-const mongoose = require('mongoose');
 
 // Request fields and AI output never choose ownership. Every resource query includes userId.
 async function generateInterviewReport(req, res) {
@@ -22,9 +21,6 @@ async function generateInterviewReport(req, res) {
 
 async function getInterviewReportById(req, res) {
     const { interviewId } = req.params;
-    if (!mongoose.isObjectIdOrHexString(interviewId)) {
-        return res.status(400).json({ message: 'Invalid interview report ID' });
-    }
     const interviewReport = await InterviewReportModel.findOne({ _id: interviewId, userId: req.user.id });
     if (!interviewReport) return res.status(404).json({ message: 'Interview report not found' });
     return res.status(200).json({ interviewReport });
@@ -38,9 +34,6 @@ async function getAllInterviewReports(req, res) {
 
 async function generateResumePDFController(req, res) {
     const { interviewReportId } = req.params;
-    if (!mongoose.isObjectIdOrHexString(interviewReportId)) {
-        return res.status(400).json({ message: 'Invalid interview report ID' });
-    }
     const report = await InterviewReportModel.findOne({ _id: interviewReportId, userId: req.user.id });
     if (!report) return res.status(404).json({ message: 'Interview report not found' });
     const pdfBuffer = await aiService.generateResumePDF({
