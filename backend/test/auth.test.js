@@ -135,6 +135,24 @@ test('registration hashes at cost 12 without trimming password and returns sanit
     assert.equal(verifyToken(res.cookies[0][1]).expiresAt.toISOString(), res.body.sessionExpiresAt);
 });
 
+test('registration insert races translate duplicate indexes into safe field-specific conflicts', async t => {
+    t.mock.method(users, 'findOne', async () => null);
+    const fields = ['email', 'username'];
+    t.mock.method(users, 'create', async () => {
+        const field = fields.shift();
+        const error = new Error('E11000 users collection internal index detail');
+        error.code = 11000;
+        error.keyPattern = { [field]: 1 };
+        throw error;
+    });
+    for (const [, code] of [['email', 'EMAIL_EXISTS'], ['username', 'USERNAME_EXISTS']]) {
+        await assert.rejects(
+            controller.registerUser({ body: { username: 'Candidate', email: 'candidate@example.com', password: 'password' } }, response()),
+            error => error.statusCode === 409 && error.code === code && !error.message.includes('E11000')
+        );
+    }
+});
+
 test('login explicitly selects password; wrong password and unknown user have the same response', async t => {
     const hash = await bcrypt.hash(' password ', 12);
     let foundUser = { ...user, password: hash };

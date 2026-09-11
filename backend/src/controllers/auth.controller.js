@@ -20,6 +20,14 @@ function sanitizeUser(user) {
     };
 }
 
+function duplicateRegistrationError(error) {
+    if (error?.code !== 11000) return null;
+    const field = Object.keys(error.keyPattern || error.keyValue || {})[0];
+    if (field === 'email') return new AppError(409, 'EMAIL_EXISTS', 'Email is already registered');
+    if (field === 'username') return new AppError(409, 'USERNAME_EXISTS', 'Username is already taken');
+    return new AppError(409, 'ACCOUNT_EXISTS', 'An account with those details already exists');
+}
+
 async function registerUser(req, res) {
     const { username, email, password } = req.body;
 
@@ -40,11 +48,12 @@ async function registerUser(req, res) {
 
     const hashedPassword = await bcrypt.hash(password, 12);
 
-    const newUser = await userModel.create({
-        username,
-        email,
-        password: hashedPassword
-    });
+    let newUser;
+    try {
+        newUser = await userModel.create({ username, email, password: hashedPassword });
+    } catch (error) {
+        throw duplicateRegistrationError(error) || error;
+    }
 
     const sessionExpiresAt = issueSession(res, newUser);
 
@@ -128,5 +137,6 @@ module.exports = {
     registerUser,
     loginUser,
     logoutUser,
-    getMeController
+    getMeController,
+    duplicateRegistrationError
 };
