@@ -85,6 +85,13 @@ test('dashboard stats aggregate only the authenticated owner and handle empty da
         totalInterviews: 0, completedInterviews: 0,
         averageMatchScore: null, bestMatchScore: null
     });
+    result = [{ totalInterviews: 1, averageMatchScore: 73, bestMatchScore: 73 }];
+    const single = response();
+    await controller.getInterviewStats({ user: { id: userId } }, single);
+    assert.deepEqual(single.body.stats, {
+        totalInterviews: 1, completedInterviews: 1,
+        averageMatchScore: 73, bestMatchScore: 73
+    });
     result = [{ totalInterviews: 3, averageMatchScore: 81.6, bestMatchScore: 94 }];
     const populated = response();
     await controller.getInterviewStats({ user: { id: userId } }, populated);
