@@ -109,3 +109,20 @@ test('report detail projection omits retained source profile fields', async t =>
         assert.equal(res.body.interviewReport[field], undefined);
     }
 });
+
+test('report deletion is owner-scoped and repeated/foreign deletion returns not found', async t => {
+    let exists = true;
+    t.mock.method(Model, 'findOneAndDelete', async filter => {
+        assert.deepEqual(filter, { _id: reportId, userId });
+        if (!exists) return null;
+        exists = false;
+        return { _id: reportId };
+    });
+    const removed = response();
+    await controller.deleteInterviewReport({ params: { interviewId: reportId }, user: { id: userId } }, removed);
+    assert.equal(removed.statusCode, 200);
+    await assert.rejects(
+        controller.deleteInterviewReport({ params: { interviewId: reportId }, user: { id: userId } }, response()),
+        error => error.statusCode === 404 && error.code === 'REPORT_NOT_FOUND'
+    );
+});
