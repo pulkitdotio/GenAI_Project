@@ -4,6 +4,7 @@ const revokedTokenModel = require('../models/revokedToken.model');
 const { getAuthConfig, getCookieOptions, getClearCookieOptions } = require('../config/auth');
 const { createToken, verifyToken, isInvalidToken } = require('../utils/token');
 const AppError = require('../utils/appError');
+const InterviewReportModel = require('../models/interviewReport.model');
 
 function issueSession(res, user) {
     const token = createToken(user._id.toString());
@@ -133,10 +134,44 @@ async function getMeController(req, res) {
     });
 }
 
+async function deleteAccount(req, res) {
+    const user = await userModel.findById(req.user.id).select('+password');
+    if (!user || !await bcrypt.compare(req.body.password, user.password)) {
+        throw new AppError(401, 'INVALID_CREDENTIALS', 'Invalid credentials');
+    }
+
+    try {
+        await InterviewReportModel.deleteMany({ userId: req.user.id });
+        await revokedTokenModel.updateOne(
+            { jti: req.user.sessionId },
+            { $setOnInsert: { jti: req.user.sessionId, expiresAt: req.user.expiresAt } },
+            { upsert: true }
+        );
+        const result = await userModel.deleteOne({ _id: req.user.id });
+        if (result.deletedCount !== 1) {
+            throw new Error('Account disappeared during deletion');
+        }
+    } catch (error) {
+        if (error.code === 11000) {
+            // A concurrent revocation insert still means this session is revoked.
+            const result = await userModel.deleteOne({ _id: req.user.id });
+            if (result.deletedCount === 1) {
+                res.clearCookie(getAuthConfig().cookieName, getClearCookieOptions());
+                return res.status(200).json({ message: 'Account deleted successfully' });
+            }
+        }
+        throw new AppError(503, 'ACCOUNT_DELETION_FAILED', 'Unable to delete account. Please try again.');
+    }
+
+    res.clearCookie(getAuthConfig().cookieName, getClearCookieOptions());
+    return res.status(200).json({ message: 'Account deleted successfully' });
+}
+
 module.exports = {
     registerUser,
     loginUser,
     logoutUser,
     getMeController,
+    deleteAccount,
     duplicateRegistrationError
 };
