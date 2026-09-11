@@ -10,6 +10,7 @@ const { generalApiLimiter } = require('./middlewares/rateLimit.middleware');
 const { createHelmetConfig } = require('./config/httpSecurity');
 const { requestId, requestLogger } = require('./middlewares/request.middleware');
 const { notFound, errorHandler } = require('./middlewares/error.middleware');
+const { liveness, createReadinessHandler } = require('./controllers/health.controller');
 
 // Validate before loading routes or opening a database/listening socket.
 getAuthConfig();
@@ -54,12 +55,8 @@ app.use(express.json({ limit: '32kb' }));
 
 app.use(cookieParser());
 
-app.get('/health', (req, res) => {
-    res.status(200).json({
-        status: 'ok',
-        message: 'API is running'
-    });
-});
+app.get('/health', liveness);
+app.get('/ready', createReadinessHandler());
 
 app.use('/api', generalApiLimiter);
 app.use('/api/auth', authRouter);
