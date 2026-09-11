@@ -48,9 +48,13 @@ function DashboardLayout() {
   const handleLogout = async () => {
     try {
       await logout();
-    } finally {
       navigate("/login", {
         replace: true,
+      });
+    } catch {
+      navigate("/login", {
+        replace: true,
+        state: { authNotice: "We couldn't confirm sign-out with the server. Your session may remain active until it expires." },
       });
     }
   };

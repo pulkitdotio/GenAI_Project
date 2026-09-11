@@ -1,43 +1,14 @@
 const userModel = require('../models/user.model');
 const bcrypt = require('bcryptjs');
-const jwt = require('jsonwebtoken');
-const blacklistModel = require('../models/blacklist.model');
+const revokedTokenModel = require('../models/revokedToken.model');
+const { getAuthConfig, getCookieOptions, getClearCookieOptions } = require('../config/auth');
+const { createToken, verifyToken, isInvalidToken } = require('../utils/token');
 
-const COOKIE_NAME = 'token';
-
-function getCookieOptions() {
-    const isProduction = process.env.NODE_ENV === 'production';
-
-    return {
-        httpOnly: true,
-        secure: isProduction,
-        sameSite: isProduction ? 'none' : 'lax',
-        maxAge: 24 * 60 * 60 * 1000,
-        path: '/'
-    };
-}
-
-function getClearCookieOptions() {
-    const isProduction = process.env.NODE_ENV === 'production';
-
-    return {
-        httpOnly: true,
-        secure: isProduction,
-        sameSite: isProduction ? 'none' : 'lax',
-        path: '/'
-    };
-}
-
-function createToken(userId) {
-    return jwt.sign(
-        {
-            id: userId
-        },
-        process.env.JWT_SECRET,
-        {
-            expiresIn: '1d'
-        }
-    );
+function issueSession(res, user) {
+    const token = createToken(user._id.toString());
+    const session = verifyToken(token);
+    res.cookie(getAuthConfig().cookieName, token, getCookieOptions());
+    return session.expiresAt.toISOString();
 }
 
 function sanitizeUser(user) {
@@ -49,9 +20,9 @@ function sanitizeUser(user) {
 }
 
 async function registerUser(req, res) {
-    const username = req.body.username?.trim();
-    const email = req.body.email?.trim().toLowerCase();
-    const password = req.body.password;
+    const username = typeof req.body?.username === 'string' ? req.body.username.trim() : '';
+    const email = typeof req.body?.email === 'string' ? req.body.email.trim().toLowerCase() : '';
+    const password = typeof req.body?.password === 'string' ? req.body.password : '';
 
     if (!username || !email || !password) {
         return res.status(400).json({
@@ -98,23 +69,18 @@ async function registerUser(req, res) {
         password: hashedPassword
     });
 
-    const token = createToken(newUser._id.toString());
-
-    res.cookie(
-        COOKIE_NAME,
-        token,
-        getCookieOptions()
-    );
+    const sessionExpiresAt = issueSession(res, newUser);
 
     return res.status(201).json({
         message: 'User registered successfully',
-        user: sanitizeUser(newUser)
+        user: sanitizeUser(newUser),
+        sessionExpiresAt
     });
 }
 
 async function loginUser(req, res) {
-    const email = req.body.email?.trim().toLowerCase();
-    const password = req.body.password;
+    const email = typeof req.body?.email === 'string' ? req.body.email.trim().toLowerCase() : '';
+    const password = typeof req.body?.password === 'string' ? req.body.password : '';
 
     if (!email || !password) {
         return res.status(400).json({
@@ -122,7 +88,7 @@ async function loginUser(req, res) {
         });
     }
 
-    const user = await userModel.findOne({ email });
+    const user = await userModel.findOne({ email }).select('+password');
 
     if (!user) {
         return res.status(401).json({
@@ -141,40 +107,35 @@ async function loginUser(req, res) {
         });
     }
 
-    const token = createToken(user._id.toString());
-
-    res.cookie(
-        COOKIE_NAME,
-        token,
-        getCookieOptions()
-    );
+    const sessionExpiresAt = issueSession(res, user);
 
     return res.status(200).json({
         message: 'Login successful',
-        user: sanitizeUser(user)
+        user: sanitizeUser(user),
+        sessionExpiresAt
     });
 }
 
 async function logoutUser(req, res) {
-    const token = req.cookies?.[COOKIE_NAME];
+    const token = req.cookies?.[getAuthConfig().cookieName];
+    res.clearCookie(getAuthConfig().cookieName, getClearCookieOptions());
 
     if (token) {
         try {
-            await blacklistModel.create({
-                token
-            });
+            const session = verifyToken(token);
+            await revokedTokenModel.updateOne(
+                { jti: session.sessionId },
+                { $setOnInsert: { jti: session.sessionId, expiresAt: session.expiresAt } },
+                { upsert: true }
+            );
         } catch (error) {
-            // Ignore duplicate token errors during repeated logout requests.
-            if (error.code !== 11000) {
-                throw error;
+            // Concurrent upserts and already-invalid cookies are safe repeat logouts.
+            if (!isInvalidToken(error) && error.code !== 11000) {
+                console.error('Logout revocation storage failed');
+                return res.status(503).json({ message: 'Unable to revoke session. Local cookie cleared.' });
             }
         }
     }
-
-    res.clearCookie(
-        COOKIE_NAME,
-        getClearCookieOptions()
-    );
 
     return res.status(200).json({
         message: 'Logout successful'
@@ -187,14 +148,16 @@ async function getMeController(req, res) {
         .select('_id username email');
 
     if (!user) {
-        return res.status(404).json({
-            message: 'User not found'
+        res.clearCookie(getAuthConfig().cookieName, getClearCookieOptions());
+        return res.status(401).json({
+            message: 'Authentication required'
         });
     }
 
     return res.status(200).json({
         message: 'User fetched successfully',
-        user: sanitizeUser(user)
+        user: sanitizeUser(user),
+        sessionExpiresAt: req.user.expiresAt.toISOString()
     });
 }
 

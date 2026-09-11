@@ -1,6 +1,13 @@
 const express = require('express');
 const cookieParser = require('cookie-parser');
 const cors = require('cors');
+const { getAuthConfig } = require('./config/auth');
+const { getAllowedOrigins } = require('./config/origins');
+const { protectOrigin } = require('./middlewares/origin.middleware');
+
+// Validate before loading routes or opening a database/listening socket.
+getAuthConfig();
+const allowedOrigins = getAllowedOrigins();
 
 const authRouter = require('./routes/auth.routes');
 const interviewRouter = require('./routes/interview.routes');
@@ -11,10 +18,7 @@ if (process.env.NODE_ENV === 'production') {
     app.set('trust proxy', 1);
 }
 
-const allowedOrigins = (process.env.CLIENT_URLS || process.env.CLIENT_URL || 'http://localhost:5173')
-    .split(',')
-    .map((origin) => origin.trim())
-    .filter(Boolean);
+app.use(protectOrigin);
 
 app.use(
     cors({
@@ -58,7 +62,8 @@ app.use((req, res) => {
 
 // Global error handler
 app.use((error, req, res, next) => {
-    console.error(error);
+    // Do not log request bodies or database errors that can contain auth credentials.
+    console.error('Request failed', { type: error.name, code: error.code });
 
     if (error.message === 'Not allowed by CORS') {
         return res.status(403).json({

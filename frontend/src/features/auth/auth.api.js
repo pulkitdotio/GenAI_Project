@@ -19,7 +19,7 @@ export async function registerUser(userData) {
 }
 
 export async function logoutUser() {
-  const response = await api.get('/auth/logout');
+  const response = await api.post('/auth/logout');
 
   return response.data;
 }

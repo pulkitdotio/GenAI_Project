@@ -1,46 +1,34 @@
-const jwt = require('jsonwebtoken');
-const blacklistModel = require('../models/blacklist.model');
+const revokedTokenModel = require('../models/revokedToken.model');
+const { getAuthConfig, getClearCookieOptions } = require('../config/auth');
+const { verifyToken, isInvalidToken } = require('../utils/token');
 
 async function authUser(req, res, next) {
+    const unauthorized = () => {
+        res.clearCookie(getAuthConfig().cookieName, getClearCookieOptions());
+        return res.status(401).json({ message: 'Authentication required' });
+    };
     try {
-        const token = req.cookies?.token;
+        const token = req.cookies?.[getAuthConfig().cookieName];
 
         if (!token) {
-            return res.status(401).json({
-                message: 'Authentication required'
-            });
+            return unauthorized();
         }
 
-        const isBlacklisted = await blacklistModel.findOne({ token });
+        const session = verifyToken(token);
+        const isBlacklisted = await revokedTokenModel.exists({ jti: session.sessionId });
 
         if (isBlacklisted) {
-            return res.status(401).json({
-                message: 'Token is invalid'
-            });
+            return unauthorized();
         }
 
-        const decoded = jwt.verify(token, process.env.JWT_SECRET);
-
-        req.user = decoded;
+        req.user = session;
 
         next();
     } catch (error) {
-        if (error.name === 'TokenExpiredError') {
-            return res.status(401).json({
-                message: 'Token expired'
-            });
-        }
-
-        if (error.name === 'JsonWebTokenError') {
-            return res.status(401).json({
-                message: 'Invalid token'
-            });
-        }
-
-        console.error('Authentication middleware error:', error);
-
-        return res.status(500).json({
-            message: 'Authentication failed'
+        if (isInvalidToken(error)) return unauthorized();
+        console.error('Authentication revocation check failed');
+        return res.status(503).json({
+            message: 'Authentication temporarily unavailable'
         });
     }
 }
